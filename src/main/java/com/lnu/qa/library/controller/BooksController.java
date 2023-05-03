@@ -47,6 +47,7 @@ public class BooksController {
 
     @ExceptionHandler({BookNotFoundException.class})
     public ResponseEntity<String> handleException(BookNotFoundException exception) {
+        log.error(exception.getMessage());
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 

@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import com.lnu.qa.library.models.Book;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Maps;
+import org.assertj.core.util.Sets;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +14,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.testng.collections.Sets;
 
 import java.util.Set;
 import java.util.UUID;
@@ -38,7 +38,7 @@ public class LibraryApplicationTests {
         //When
         Book[] books = restTemplate.getForObject("/books", Book[].class);
         //Then
-        Assert.assertTrue(Sets.newHashSet(books).containsAll(Lists.list(book_1, book_2)));
+        Assert.assertTrue(Sets.newLinkedHashSet(books).containsAll(Lists.list(book_1, book_2)));
     }
 
     @Test
@@ -69,7 +69,7 @@ public class LibraryApplicationTests {
         //When
         Book[] books = restTemplate.getForObject("/books", Book[].class);
         //Then
-        Assert.assertTrue(Sets.newHashSet(books).contains(book_1));
+        Assert.assertTrue(Sets.newLinkedHashSet(books).contains(book_1));
         Assert.assertEquals(initialBooks, books.length - 1);
     }
 
@@ -85,8 +85,8 @@ public class LibraryApplicationTests {
 
         //Then
         Assert.assertEquals(bookFromLibrary.getName(), book_1.getName());
-        Assert.assertTrue(Sets.newHashSet(books).stream().filter(b -> b.getName().equals(newBook.getName())).findAny().isPresent());
-        Assert.assertFalse(Sets.newHashSet(books).contains(bookFromLibrary));
+        Assert.assertTrue(Sets.newLinkedHashSet(books).stream().filter(b -> b.getName().equals(newBook.getName())).findAny().isPresent());
+        Assert.assertFalse(Sets.newLinkedHashSet(books).contains(bookFromLibrary));
     }
 
     @Test
@@ -109,7 +109,7 @@ public class LibraryApplicationTests {
         Book[] booksFromLibrary = restTemplate.getForObject("/books/author/{name}", Book[].class, Maps.newHashMap("name", author));
         //Then
         Assert.assertEquals(booksFromLibrary.length, 5);
-        Set<Book> actualBooks = Sets.newHashSet(booksFromLibrary);
+        Set<Book> actualBooks = Sets.newLinkedHashSet(booksFromLibrary);
         Assert.assertTrue(actualBooks.stream().map(Book::getAuthor).allMatch(author::equals));
     }
 
@@ -124,7 +124,7 @@ public class LibraryApplicationTests {
         Book[] booksFromLibrary = restTemplate.getForObject("/books/author/{name}", Book[].class, Maps.newHashMap("name", author));
         //Then
         Assert.assertEquals(booksFromLibrary.length, 2);
-        Set<Book> actualBooks = Sets.newHashSet(booksFromLibrary);
+        Set<Book> actualBooks = Sets.newLinkedHashSet(booksFromLibrary);
         Assert.assertTrue(actualBooks.stream().map(Book::getAuthor).allMatch(author::equals));
     }
 
@@ -139,7 +139,7 @@ public class LibraryApplicationTests {
         Book[] booksFromLibrary = restTemplate.getForObject("/books/author/{name}", Book[].class, Maps.newHashMap("name", author));
         //Then
         Assert.assertEquals(booksFromLibrary.length, 5);
-        Set<Book> actualBooks = Sets.newHashSet(booksFromLibrary);
+        Set<Book> actualBooks = Sets.newLinkedHashSet(booksFromLibrary);
         Assert.assertTrue(actualBooks.stream().map(Book::getAuthor).allMatch(author::equals));
     }
 

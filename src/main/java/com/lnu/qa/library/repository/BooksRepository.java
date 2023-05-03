@@ -21,12 +21,14 @@ public class BooksRepository {
     }
 
     public Book getBookByName(String name) {
+        log.info("Get book by name: {}", name);
         Book book = findBookByName(name);
         books.remove(book);
         return book;
     }
 
     public Book returnBook(Book savedBook) {
+        log.info("Return book: {}", savedBook);
         books.add(savedBook);
         return savedBook;
     }
@@ -40,6 +42,7 @@ public class BooksRepository {
 
 
     public Book replaceBook(String retrievedBookName, Book savedBook) {
+        log.info("Replace book: {} to {}", retrievedBookName, savedBook);
         savedBook.setId(UUID.randomUUID().toString());
         Book book = findBookByName(retrievedBookName);
         books.remove(book);
@@ -48,6 +51,7 @@ public class BooksRepository {
     }
 
     public List<Book> getFiveBooksByAuthor(String author) {
+        log.info("Get five books by author: {}", author);
         List<Book> result = books.stream()
                 .filter(b -> b.getAuthor().equals(author))
                 .limit(5)
