@@ -6,27 +6,27 @@ import org.assertj.core.util.Lists;
 import org.assertj.core.util.Maps;
 import org.assertj.core.util.Sets;
 import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LibraryApplicationTests {
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = LibraryApplication.class)
+public class LibraryApplicationTests extends AbstractTestNGSpringContextTests {
 
     @Autowired
     private TestRestTemplate restTemplate;
-
 
     @Test
     public void shouldReturnBooks() {
@@ -41,15 +41,26 @@ public class LibraryApplicationTests {
         Assert.assertTrue(Sets.newLinkedHashSet(books).containsAll(Lists.list(book_1, book_2)));
     }
 
-    @Test
-    public void shouldReturnBookByName() {
+    @Test(dataProvider = "generateBookWithName")
+    public void shouldReturnBookByName(String name) {
         //Given
-        Book book_1 = generateBook();
+        Book book_1 = generateBookWithName(name);
         restTemplate.postForObject("/books", book_1, Book.class);
         //When
-        Book actualBook = restTemplate.getForObject("/books/name/{name}", Book.class, Maps.newHashMap("name", book_1.getName()));
+        Book actualBook = restTemplate.getForObject("/books/name/{name}", Book.class, Maps.newHashMap("name", name));
         //Then
         Assert.assertEquals(actualBook, book_1);
+    }
+
+    @DataProvider
+    public static Object[] generateBookWithName() {
+        return new Object[]{
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+        };
     }
 
     @Test
@@ -102,7 +113,7 @@ public class LibraryApplicationTests {
     public void shouldReturnFiveBooksForAuthor() {
         //Given
         String author = "some_author";
-        IntStream.range(0, 5).mapToObj(i -> generateBook(author)).forEach(b -> {
+        IntStream.range(0, 5).mapToObj(i -> generateBookWithAuthor(author)).forEach(b -> {
             restTemplate.postForObject("/books", b, Book.class);
         });
         //When
@@ -117,7 +128,7 @@ public class LibraryApplicationTests {
     public void shouldReturnLessBooksIfFiveNotFoundForAuthor() {
         //Given
         String author = "some_another_author";
-        IntStream.range(0, 2).mapToObj(i -> generateBook(author)).forEach(b -> {
+        IntStream.range(0, 2).mapToObj(i -> generateBookWithAuthor(author)).forEach(b -> {
             restTemplate.postForObject("/books", b, Book.class);
         });
         //When
@@ -132,7 +143,7 @@ public class LibraryApplicationTests {
     public void shouldReturnOnlyFiveBooksIfStoredMoreForAuthor() {
         //Given
         String author = "some_author";
-        IntStream.range(0, 10).mapToObj(i -> generateBook(author)).forEach(b -> {
+        IntStream.range(0, 10).mapToObj(i -> generateBookWithAuthor(author)).forEach(b -> {
             restTemplate.postForObject("/books", b, Book.class);
         });
         //When
@@ -163,9 +174,15 @@ public class LibraryApplicationTests {
         return book;
     }
 
-    private Book generateBook(String author) {
+    private Book generateBookWithAuthor(String author) {
         Book book = generateBook();
         book.setAuthor(author);
+        return book;
+    }
+
+    private Book generateBookWithName(String name) {
+        Book book = generateBook();
+        book.setName(name);
         return book;
     }
 

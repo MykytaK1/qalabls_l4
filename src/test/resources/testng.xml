@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="fourth_lab" verbose="1">
+    <test name="Library test">
+        <classes>
+            <class name="com.lnu.qa.library.LibraryApplicationTests"/>
+        </classes>
+    </test>
+</suite>

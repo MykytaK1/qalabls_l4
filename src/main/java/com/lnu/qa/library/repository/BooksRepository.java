@@ -37,7 +37,8 @@ public class BooksRepository {
         return books.stream()
                 .filter(b -> b.getName().equals(name))
                 .findFirst()
-                .orElseThrow(() -> new BookNotFoundException(String.format("Book with name [%s] was not found", name)));
+                .orElseThrow(() ->
+                        new BookNotFoundException(String.format("Book with name [%s] was not found", name)));
     }
 
 
